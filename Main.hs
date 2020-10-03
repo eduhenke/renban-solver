@@ -1,4 +1,5 @@
 import Board
+import Backtrack
 
 board = Board {
   cells=newBoardCells 3,
@@ -9,9 +10,9 @@ board = Board {
 }
 
 computeActions :: Board -> [FillAction] -> Board
-computeActions board actions = foldr fillCell board actions
+computeActions board actions = foldl fillCell board actions
 
 main = do
   print $ board
-
   print $ computeActions board [((1, 1), 3), ((0, 0), 1)]
+  print $ children $ computeActions board [((1, 1), 3), ((0, 0), 1)]
