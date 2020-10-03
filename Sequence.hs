@@ -1,9 +1,9 @@
 module Sequence (isSequenceValid) where
-import Position (Fill)
+import Cell
 
-isSequenceValid :: [Maybe Fill] -> Bool
+isSequenceValid :: [Cell] -> Bool
 isSequenceValid fills =
-  let filledNumbers = [num | Just num <- fills]
+  let filledNumbers = [num | (Cell (Just num)) <- fills]
       uniqueNumbers = map (\x -> filter ((/=) x)) filledNumbers
       maxNumber = maximum filledNumbers
       minNumber = minimum filledNumbers
