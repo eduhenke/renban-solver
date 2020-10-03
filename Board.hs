@@ -1,6 +1,7 @@
-module Board (FillAction, Board(Board, positions, areas), newBoardPositions, rows, cols, fillPosition) where
-
-import Position
+module Board (FillAction, Board(Board, positions, areas), newBoardPositions, rows, cols, fillPosition, isBoardValid) where
+  
+import Position  
+import Sequence (isSequenceValid)
 import Area
 import Data.List
 import Data.Function
@@ -15,7 +16,6 @@ data Board = Board {
 newBoardPositions :: Int -> [[Position]]
 newBoardPositions n = [[emptyPosition x y | x <- [1..n]] | y <- [1..n]]
 
-
 rows :: Board -> [[Position]]
 rows = positions
 
@@ -27,8 +27,8 @@ instance Show Board where
     concat $ map (\x -> unwords (map show x) ++ "\n") $ rows board
 
 
-fillPosition :: Board -> FillAction -> Board
-fillPosition board ((x', y'), n) =
+fillPosition :: FillAction -> Board -> Board
+fillPosition ((x', y'), n) board =
   let
     replacePosition p =
       if x p == x' && y p == y' then
@@ -40,3 +40,12 @@ fillPosition board ((x', y'), n) =
       positions=map (map replacePosition) $ positions board,
       areas = areas board
     }
+
+isBoardValid :: Board -> Bool
+isBoardValid board =
+  let areAllPositionsValid ps = all isSequenceValid $ map (map filledNumber) ps
+      validRows = areAllPositionsValid $ rows board
+      validCols = areAllPositionsValid $ cols board
+      validAreas = True -- TODO
+  in
+    validRows && validCols
