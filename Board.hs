@@ -2,19 +2,18 @@ module Board (FillAction, Board(Board, positions, areas), newBoardPositions, row
   
 import Position  
 import Sequence (isSequenceValid)
-import Area
 import Data.List
 import Data.Function
 
 type FillAction = ((Int, Int), Fill)
-
+type Area = [(Int, Int)]
 data Board = Board {
   positions :: [[Position]],
   areas :: [Area]
 }
 
 newBoardPositions :: Int -> [[Position]]
-newBoardPositions n = [[emptyPosition x y | x <- [1..n]] | y <- [1..n]]
+newBoardPositions n = [[emptyPosition x y | x <- [0..(n-1)]] | y <- [0..(n-1)]]
 
 rows :: Board -> [[Position]]
 rows = positions
@@ -41,11 +40,19 @@ fillPosition ((x', y'), n) board =
       areas = areas board
     }
 
+getPositionAt :: (Int, Int) -> Board -> Position
+getPositionAt (i,j) board =
+  (positions board) !! j !! i
+
+getAreaPositions :: Area -> Board -> [Position]
+getAreaPositions area board =
+  map (\p -> getPositionAt p board) area
+
 isBoardValid :: Board -> Bool
 isBoardValid board =
   let areAllPositionsValid ps = all isSequenceValid $ map (map filledNumber) ps
       validRows = areAllPositionsValid $ rows board
       validCols = areAllPositionsValid $ cols board
-      validAreas = True -- TODO
+      validAreas = areAllPositionsValid $ map (\a -> getAreaPositions a board) $ areas board
   in
-    validRows && validCols
+    validRows && validCols && validAreas
