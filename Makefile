@@ -1,8 +1,10 @@
 run:
-	ghc --make Main && ./Main
+	ghc --make Main
+	./Main
 
 test:
-	ghc --make Test && ./Test
+	ghc Test
+	./Test
 
 clean:
 	rm *.o *.hi Main Test

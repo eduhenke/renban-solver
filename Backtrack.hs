@@ -1,9 +1,10 @@
 module Backtrack where
 import Data.Set
+import Data.Foldable
 import qualified Data.Set as Set
 
 flatten :: Ord a => Set (Set a) -> Set a
-flatten ss' = fold union Set.empty ss'
+flatten ss' = Set.fold union Set.empty ss'
 
 
 class Ord state => Backtrackable state where  
@@ -15,3 +16,5 @@ class Ord state => Backtrackable state where
     | solved state = singleton state
     | invalid state = empty
     | otherwise = flatten $ Set.map backtrack $ children state
+  solve :: state -> Maybe state
+  solve state = find (\_ -> True) $ backtrack state

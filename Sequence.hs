@@ -15,11 +15,10 @@ areCellsValid = isSequenceValid . (map filledNumber)
 
 
 isSequenceInvalid :: [Maybe Fill] -> Bool
-isSequenceInvalid sequence
-  | length sequence == length filledNumbers =
-    nub filledNumbers /= filledNumbers
-  | otherwise = False
-  where filledNumbers = catMaybes sequence
+isSequenceInvalid sequence =
+  let filledNumbers = catMaybes sequence
+      uniqueNumbers = nub filledNumbers
+  in uniqueNumbers /= filledNumbers
 
 areCellsInvalid :: [Cell] -> Bool
 areCellsInvalid = isSequenceInvalid . (map filledNumber)

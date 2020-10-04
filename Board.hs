@@ -1,4 +1,4 @@
-module Board (FillAction, Board(Board, cells, areas), newBoardCells, rows, cols, fillCell) where
+module Board where
   
 import Cell
 import Sequence
@@ -11,6 +11,7 @@ type Area = [Position]
 
 data Board = Board {
   cells :: [[Cell]],
+  size :: Int,
   areas :: [Area]
 } deriving (Eq, Ord)
 
@@ -28,27 +29,25 @@ instance Show Board where
     concat $ map (\x -> unwords (map show x) ++ "\n") $ rows board
 
 
-fillCell :: Board -> FillAction -> Board
-fillCell board ((x', y'), num') =
-  Board {
-    cells= map (map replaceCell) $ cells board,
-    areas= areas board
-  }
+fillCell :: [[Cell]] -> FillAction -> [[Cell]]
+fillCell cells ((x', y'), num') =
+  map (map replaceCell) $ cells
   where replaceCell (Cell (x, y) num) = if x == x' && y == y' then Cell (x, y) (Just num') else Cell (x, y) num
 
-getCellAt :: Board -> Position -> Cell
-getCellAt board (x, y) =
-  (rows board) !! y !! x
+fillCellBoard :: Board -> FillAction -> Board
+fillCellBoard (Board cells size areas) action =
+  Board (fillCell cells action) size areas
 
-getAreaCells :: Board -> Area -> [Cell]
-getAreaCells board area =
-  map (getCellAt board) area
+getCellAt :: [[Cell]] -> Position -> Cell
+getCellAt rows (x, y) =
+  rows !! y !! x
+
+getAreaCells :: [[Cell]] -> Area -> [Cell]
+getAreaCells rows area =
+  map (getCellAt rows) area
 
 emptyCells :: Board -> [Cell]
 emptyCells board = filter emptyCell $ concat $ cells board
-
-numOptions :: [Fill]
-numOptions = [1..4]
 
 allCellsSequences :: Board -> [[Cell]]
 allCellsSequences board =
@@ -56,14 +55,14 @@ allCellsSequences board =
   where
     rowsCells = rows board
     colsCells = cols board
-    areaCells = map (getAreaCells board) $ areas board
+    areaCells = map (getAreaCells $ rows board) $ areas board
 instance Backtrackable Board where
   solved board = all areCellsValid $ allCellsSequences board
   invalid board =
     (length $ emptyCells board) == 0 ||
     (any areCellsInvalid $ allCellsSequences board)
   children board =
-    let getFillAction cell = [(position cell, num) | num <- numOptions]
+    let getFillAction cell = [(position cell, num) | num <- [1..(size board)]]
         fillActions = Set.fromList $ concat $ map getFillAction $ [head $ emptyCells board]
-    in Set.map (fillCell board) fillActions
+    in Set.map (fillCellBoard board) fillActions
     
