@@ -2,11 +2,12 @@ import Board
 import Backtrack
 import Cell
 
+-- método auxiliar para preencher um array de células em vez de chamar várias vezes o método fillCell para cada célula
 fillCells :: [[Cell]] -> [FillAction] -> [[Cell]]
 fillCells cells actions =
   foldl fillCell cells actions
 
--- https://www.janko.at/Raetsel/Renban/001.a.htm
+-- criação do board igual ao enunciado do problema proposto no desafio: https://www.janko.at/Raetsel/Renban/001.a.htm
 boardNum001 = Board {
   cells=fillCells (newBoardCells 6) [
     ((2, 1), 6),
@@ -42,6 +43,7 @@ boardNum001 = Board {
 }
 
 main = do
-  print $ boardNum001
+  print boardNum001
+  -- solução que o backtrack encontrou pro board do enunciado (boardNum001)
   -- see board-num-001.png
   print $ solve boardNum001
